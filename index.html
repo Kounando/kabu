@@ -23,4 +23,107 @@
     </div>
 
     <div id="balance">💰 所持金: <span id="money">100000</span> 円 | 📈 株: <span id="stocks">0</span> 株</div>
-    <div id="history"><strong>📜 取引履歴:</strong></
+    <div id="history"><strong>📜 取引履歴:</strong></div>
+
+    <script>
+        let balance = 100000;  // 所持金
+        let stocks = 0;        // 保有株数
+        let stockPrices = [];  // 株価データ
+        let labels = [];       // 日付ラベル
+        let date = new Date();
+        date.setDate(date.getDate() - 365);
+
+        // 株価データを生成（ランダムウォーク）
+        function generateStockData(days, startPrice) {
+            let prices = [startPrice];
+
+            for (let i = 0; i < days; i++) {
+                labels.push(date.toISOString().split('T')[0]); // YYYY-MM-DD形式
+                let change = (Math.random() - 0.5) * 2; // -1%〜+1%の変動
+                prices.push(prices[prices.length - 1] * (1 + change / 100));
+                date.setDate(date.getDate() + 1);
+            }
+            return prices;
+        }
+
+        stockPrices = generateStockData(365, 100);
+        let currentPrice = stockPrices[stockPrices.length - 1];
+
+        // 株価チャートの描画
+        const ctx = document.getElementById("stockChart").getContext("2d");
+        const chart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "株価 (円)",
+                    data: stockPrices,
+                    borderColor: "blue",
+                    backgroundColor: "rgba(0, 0, 255, 0.1)",
+                    borderWidth: 2,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { display: true },
+                    y: { display: true }
+                }
+            }
+        });
+
+        // 買うボタンの処理（買うと株価上昇）
+        function buyStock() {
+            if (balance >= currentPrice) {
+                balance -= currentPrice;
+                stocks += 1;
+                let change = (Math.random() * 1.5 + 0.5) / 100; // +0.5% 〜 +2% 上昇
+                updateStockPrice(change);
+                updateUI("✅ 買った: " + currentPrice.toFixed(2) + " 円");
+            } else {
+                alert("お金が足りません！");
+            }
+        }
+
+        // 売るボタンの処理（売ると株価下落）
+        function sellStock() {
+            if (stocks > 0) {
+                balance += currentPrice;
+                stocks -= 1;
+                let change = (Math.random() * 1.5 + 0.5) / -100; // -0.5% 〜 -2% 下落
+                updateStockPrice(change);
+                updateUI("❌ 売った: " + currentPrice.toFixed(2) + " 円");
+            } else {
+                alert("売る株がありません！");
+            }
+        }
+
+        // 株価を更新する関数
+        function updateStockPrice(change) {
+            currentPrice *= (1 + change);
+            stockPrices.push(currentPrice);
+            labels.push(new Date().toISOString().split('T')[0]);
+
+            if (stockPrices.length > 365) {
+                stockPrices.shift();
+                labels.shift();
+            }
+
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = stockPrices;
+            chart.update();
+        }
+
+        // UIを更新する関数
+        function updateUI(message) {
+            document.getElementById("money").innerText = balance.toFixed(2);
+            document.getElementById("stocks").innerText = stocks;
+            let historyDiv = document.getElementById("history");
+            let newEntry = document.createElement("div");
+            newEntry.innerText = message;
+            historyDiv.appendChild(newEntry);
+        }
+    </script>
+</body>
+</html>
