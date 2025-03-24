@@ -3,127 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>架空の株価チャート</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        canvas { max-width: 90%; margin: auto; }
-        .controls { margin: 20px; }
-        button { margin: 5px; padding: 10px 20px; font-size: 16px; }
-        #balance, #history { margin-top: 20px; }
-    </style>
+    <title>架空の株式シミュレーション</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-    <h2>架空の株価チャート</h2>
-    <canvas id="stockChart"></canvas>
-
-    <div class="controls">
-        <button onclick="buyStock()">📈 買う</button>
-        <button onclick="sellStock()">📉 売る</button>
-    </div>
-
-    <div id="balance">💰 所持金: <span id="money">100000</span> 円 | 📈 株: <span id="stocks">0</span> 株</div>
-    <div id="history"><strong>📜 取引履歴:</strong></div>
-
+    <h1>架空の株式シミュレーション</h1>
+    <div id="chart"></div>
+    <h2 id="finalValue"></h2>
+    
     <script>
-        let balance = 100000;  // 所持金
-        let stocks = 0;        // 保有株数
-        let stockPrices = [];  // 株価データ
-        let labels = [];       // 日付ラベル
-        let date = new Date();
-        date.setDate(date.getDate() - 365);
-
-        // 株価データを生成（ランダムウォーク）
-        function generateStockData(days, startPrice) {
-            let prices = [startPrice];
-
-            for (let i = 0; i < days; i++) {
-                labels.push(date.toISOString().split('T')[0]); // YYYY-MM-DD形式
-                let change = (Math.random() - 0.5) * 2; // -1%〜+1%の変動
-                prices.push(prices[prices.length - 1] * (1 + change / 100));
-                date.setDate(date.getDate() + 1);
+        // ランダムな株価データを生成
+        function generateStockPrices(days, initialPrice, volatility) {
+            let prices = [initialPrice];
+            for (let i = 1; i < days; i++) {
+                let change = (Math.random() - 0.5) * volatility;
+                prices.push(Math.max(50, prices[i - 1] + change));
             }
             return prices;
         }
-
-        stockPrices = generateStockData(365, 100);
-        let currentPrice = stockPrices[stockPrices.length - 1];
-
-        // 株価チャートの描画
-        const ctx = document.getElementById("stockChart").getContext("2d");
-        const chart = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: "株価 (円)",
-                    data: stockPrices,
-                    borderColor: "blue",
-                    backgroundColor: "rgba(0, 0, 255, 0.1)",
-                    borderWidth: 2,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: { display: true },
-                    y: { display: true }
+        
+        // RSI計算
+        function computeRSI(prices, period = 14) {
+            let rsi = new Array(prices.length).fill(50);
+            for (let i = period; i < prices.length; i++) {
+                let gains = 0, losses = 0;
+                for (let j = i - period; j < i; j++) {
+                    let diff = prices[j + 1] - prices[j];
+                    if (diff > 0) gains += diff;
+                    else losses -= diff;
                 }
+                let rs = gains / (losses + 1e-10);
+                rsi[i] = 100 - (100 / (1 + rs));
             }
-        });
-
-        // 買うボタンの処理（買うと株価上昇）
-        function buyStock() {
-            if (balance >= currentPrice) {
-                balance -= currentPrice;
-                stocks += 1;
-                let change = (Math.random() * 1.5 + 0.5) / 100; // +0.5% 〜 +2% 上昇
-                updateStockPrice(change);
-                updateUI("✅ 買った: " + currentPrice.toFixed(2) + " 円");
-            } else {
-                alert("お金が足りません！");
-            }
+            return rsi;
         }
-
-        // 売るボタンの処理（売ると株価下落）
-        function sellStock() {
-            if (stocks > 0) {
-                balance += currentPrice;
-                stocks -= 1;
-                let change = (Math.random() * 1.5 + 0.5) / -100; // -0.5% 〜 -2% 下落
-                updateStockPrice(change);
-                updateUI("❌ 売った: " + currentPrice.toFixed(2) + " 円");
-            } else {
-                alert("売る株がありません！");
+        
+        let days = 100;
+        let prices = generateStockPrices(days, 100, 5);
+        let rsi = computeRSI(prices);
+        
+        let cash = 10000;
+        let stocks = 0;
+        let buySignals = [], sellSignals = [];
+        
+        for (let i = 0; i < days; i++) {
+            if (rsi[i] < 30 && cash >= prices[i]) { 
+                stocks = Math.floor(cash / prices[i]);
+                cash -= stocks * prices[i];
+                buySignals.push({x: i, y: prices[i]});
+            } else if (rsi[i] > 70 && stocks > 0) {
+                cash += stocks * prices[i];
+                stocks = 0;
+                sellSignals.push({x: i, y: prices[i]});
             }
         }
-
-        // 株価を更新する関数
-        function updateStockPrice(change) {
-            currentPrice *= (1 + change);
-            stockPrices.push(currentPrice);
-            labels.push(new Date().toISOString().split('T')[0]);
-
-            if (stockPrices.length > 365) {
-                stockPrices.shift();
-                labels.shift();
-            }
-
-            chart.data.labels = labels;
-            chart.data.datasets[0].data = stockPrices;
-            chart.update();
-        }
-
-        // UIを更新する関数
-        function updateUI(message) {
-            document.getElementById("money").innerText = balance.toFixed(2);
-            document.getElementById("stocks").innerText = stocks;
-            let historyDiv = document.getElementById("history");
-            let newEntry = document.createElement("div");
-            newEntry.innerText = message;
-            historyDiv.appendChild(newEntry);
-        }
+        
+        let finalValue = cash + stocks * prices[prices.length - 1];
+        document.getElementById("finalValue").innerText = `最終資産価値: $${finalValue.toFixed(2)}`;
+        
+        let trace1 = {
+            x: Array.from({length: days}, (_, i) => i),
+            y: prices,
+            mode: 'lines',
+            name: '株価'
+        };
+        
+        let trace2 = {
+            x: buySignals.map(p => p.x),
+            y: buySignals.map(p => p.y),
+            mode: 'markers',
+            name: '買いシグナル',
+            marker: {color: 'green', size: 10}
+        };
+        
+        let trace3 = {
+            x: sellSignals.map(p => p.x),
+            y: sellSignals.map(p => p.y),
+            mode: 'markers',
+            name: '売りシグナル',
+            marker: {color: 'red', size: 10}
+        };
+        
+        Plotly.newPlot('chart', [trace1, trace2, trace3]);
     </script>
 </body>
 </html>
