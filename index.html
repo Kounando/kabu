@@ -5,18 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>架空の株価チャート</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        canvas { max-width: 90%; margin: auto; }
+        .controls { margin: 20px; }
+        button { margin: 5px; padding: 10px 20px; font-size: 16px; }
+        #balance, #history { margin-top: 20px; }
+    </style>
 </head>
 <body>
     <h2>架空の株価チャート</h2>
     <canvas id="stockChart"></canvas>
 
+    <div class="controls">
+        <button onclick="buyStock()">買う</button>
+        <button onclick="sellStock()">売る</button>
+    </div>
+
+    <div id="balance">💰 所持金: <span id="money">100000</span> 円 | 📈 株: <span id="stocks">0</span> 株</div>
+    <div id="history"><strong>取引履歴:</strong></div>
+
     <script>
-        // ランダムな株価データを生成
+        let balance = 100000;  // 所持金
+        let stocks = 0;        // 保有株数
+        let stockPrices = [];  // 株価データ
+        let labels = [];       // 日付ラベル
+        let date = new Date();
+        date.setDate(date.getDate() - 365);
+
+        // 株価データを生成（ランダムウォーク）
         function generateStockData(days, startPrice) {
             let prices = [startPrice];
-            let labels = [];
-            let date = new Date();
-            date.setDate(date.getDate() - days);
 
             for (let i = 0; i < days; i++) {
                 labels.push(date.toISOString().split('T')[0]); // YYYY-MM-DD形式
@@ -24,20 +43,21 @@
                 prices.push(prices[prices.length - 1] * (1 + change / 100));
                 date.setDate(date.getDate() + 1);
             }
-            return { labels, prices };
+            return prices;
         }
 
-        const stockData = generateStockData(365, 100);
+        stockPrices = generateStockData(365, 100);
+        let currentPrice = stockPrices[stockPrices.length - 1];
 
-        // Chart.jsで描画
+        // 株価チャートの描画
         const ctx = document.getElementById("stockChart").getContext("2d");
-        new Chart(ctx, {
+        const chart = new Chart(ctx, {
             type: "line",
             data: {
-                labels: stockData.labels,
+                labels: labels,
                 datasets: [{
                     label: "株価 (円)",
-                    data: stockData.prices,
+                    data: stockPrices,
                     borderColor: "blue",
                     backgroundColor: "rgba(0, 0, 255, 0.1)",
                     borderWidth: 2,
@@ -52,6 +72,38 @@
                 }
             }
         });
+
+        // 買うボタンの処理
+        function buyStock() {
+            if (balance >= currentPrice) {
+                balance -= currentPrice;
+                stocks += 1;
+                updateUI("✅ 買った: " + currentPrice.toFixed(2) + " 円");
+            } else {
+                alert("お金が足りません！");
+            }
+        }
+
+        // 売るボタンの処理
+        function sellStock() {
+            if (stocks > 0) {
+                balance += currentPrice;
+                stocks -= 1;
+                updateUI("❌ 売った: " + currentPrice.toFixed(2) + " 円");
+            } else {
+                alert("売る株がありません！");
+            }
+        }
+
+        // UIを更新する関数
+        function updateUI(message) {
+            document.getElementById("money").innerText = balance.toFixed(2);
+            document.getElementById("stocks").innerText = stocks;
+            let historyDiv = document.getElementById("history");
+            let newEntry = document.createElement("div");
+            newEntry.innerText = message;
+            historyDiv.appendChild(newEntry);
+        }
     </script>
 </body>
 </html>
