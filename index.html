@@ -41,6 +41,112 @@
         }
 
         function buyStock() {
+            adjustStockPrice();
+            if (cash >= prices[currentDay] * tradeAmount) {
+                cash -= prices[currentDay] * tradeAmount;
+                stocks += tradeAmount;
+                buySignals.push({ x: currentDay, y: prices[currentDay] });
+                updateChart();
+                document.getElementById("status").innerText = `買いました: ${tradeAmount} 株`;
+            } else {
+                document.getElementById("status").innerText = "資金が不足しています。";
+            }
+        }
+
+        function sellStock() {
+            adjustStockPrice();
+            if (stocks >= tradeAmount) {
+                cash += prices[currentDay] * tradeAmount;
+                stocks -= tradeAmount;
+                sellSignals.push({ x: currentDay, y: prices[currentDay] });
+                updateChart();
+                document.getElementById("status").innerText = `売却しました: ${tradeAmount} 株`;
+            } else {
+                document.getElementById("status").innerText = "売る株がありません。";
+            }
+        }
+
+        function adjustStockPrice() {
+            let change = Math.floor(Math.random() * 500 - 250);
+            prices[currentDay] = Math.max(5000, prices[currentDay] + change);
+            updateChart();
+        }
+
+        function updateChart() {
+            let trace1 = {
+                x: Array.from({ length: days }, (_, i) => i),
+                y: prices,
+                mode: 'lines',
+                name: '株価'
+            };
+
+            let trace2 = {
+                x: buySignals.map(p => p.x),
+                y: buySignals.map(p => p.y),
+                mode: 'markers',
+                name: '買いシグナル',
+                marker: { color: 'green', size: 10 }
+            };
+
+            let trace3 = {
+                x: sellSignals.map(p => p.x),
+                y: sellSignals.map(p => p.y),
+                mode: 'markers',
+                name: '売りシグナル',
+                marker: { color: 'red', size: 10 }
+            };
+
+            Plotly.newPlot('chart', [trace1, trace2, trace3]);
+            document.getElementById("finalValue").innerText = `現金: ¥${cash.toLocaleString()} | 保有株: ${stocks} 株`;
+        }
+
+        updateChart();
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>架空の株式シミュレーション</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>架空の株式シミュレーション</h1>
+    <div id="chart"></div>
+    <h2 id="finalValue"></h2>
+    <label for="tradeAmount">取引単位:</label>
+    <select id="tradeAmount" onchange="changeTradeAmount()">
+        <option value="10">10株</option>
+        <option value="50">50株</option>
+        <option value="100">100株</option>
+    </select>
+    <button onclick="buyStock()">買う</button>
+    <button onclick="sellStock()">売る</button>
+    <p id="status"></p>
+    
+    <script>
+        let days = 100;
+        let prices = Array.from({ length: days }, (_, i) => 10000 + Math.floor(Math.random() * 2000 - 1000)); // すべての株価を10000円に固定
+        let cash = 100000000;
+        let stocks = 0;
+        let buySignals = [], sellSignals = [];
+        let currentDay = 0;
+        let tradeAmount = 10; // 初期取引単位を10株に設定
+
+        function changeTradeAmount() {
+            tradeAmount = parseInt(document.getElementById("tradeAmount").value);
+        }
+
+        function buyStock() {
             if (cash >= prices[currentDay] * tradeAmount) {
                 cash -= prices[currentDay] * tradeAmount;
                 stocks += tradeAmount;
