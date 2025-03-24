@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>架空の株式シミュレーション</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+            margin: 10px;
+        }
+    </style>
 </head>
 <body>
     <h1>架空の株式シミュレーション</h1>
@@ -16,19 +23,19 @@
     
     <script>
         let days = 100;
-        let prices = generateStockPrices(days, 100, 5);
+        let prices = generateStockPrices(days, 10000, 500);
         let rsi = computeRSI(prices);
-        let cash = 10000;
+        let cash = 1000000;
         let stocks = 0;
         let buySignals = [], sellSignals = [];
         let currentDay = 0;
-        let tradeAmount = 1; // 取引単位を1株に設定
+        let tradeAmount = 100; // 100株単位に変更
 
         function generateStockPrices(days, initialPrice, volatility) {
             let prices = [initialPrice];
             for (let i = 1; i < days; i++) {
                 let change = (Math.random() - 0.5) * volatility;
-                prices.push(Math.max(50, prices[i - 1] + change));
+                prices.push(Math.max(5000, prices[i - 1] + change));
             }
             return prices;
         }
@@ -97,7 +104,7 @@
             };
 
             Plotly.newPlot('chart', [trace1, trace2, trace3]);
-            document.getElementById("finalValue").innerText = `現金: $${cash.toFixed(2)} | 保有株: ${stocks} 株`;
+            document.getElementById("finalValue").innerText = `現金: ¥${cash.toLocaleString()} | 保有株: ${stocks} 株`;
         }
 
         updateChart();
