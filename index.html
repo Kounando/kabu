@@ -68,10 +68,6 @@
 
         function adjustStockPrice() {
             let change = Math.floor(Math.random() * 500 - 250);
-            prices.push(Math.max(5000, prices[prices.length - 1] + change));
-            prices.shift();
-            currentDay++;
-            let change = Math.floor(Math.random() * 500 - 250);
             prices[currentDay] = Math.max(5000, prices[currentDay] + change);
             updateChart();
         }
@@ -108,4 +104,3 @@
     </script>
 </body>
 </html>
-
