@@ -29,7 +29,7 @@
     
     <script>
         let days = 100;
-        let prices = Array(days).fill(10000); // すべての株価を10000円に固定
+        let prices = Array.from({ length: days }, (_, i) => 10000 + Math.floor(Math.random() * 2000 - 1000)); // すべての株価を10000円に固定
         let cash = 100000000;
         let stocks = 0;
         let buySignals = [], sellSignals = [];
