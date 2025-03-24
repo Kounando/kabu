@@ -22,6 +22,7 @@
         let stocks = 0;
         let buySignals = [], sellSignals = [];
         let currentDay = 0;
+        let tradeAmount = 1; // 取引単位を1株に設定
 
         function generateStockPrices(days, initialPrice, volatility) {
             let prices = [initialPrice];
@@ -48,25 +49,24 @@
         }
 
         function buyStock() {
-            if (cash >= prices[currentDay]) {
-                let stocksToBuy = Math.floor(cash / prices[currentDay]);
-                cash -= stocksToBuy * prices[currentDay];
-                stocks += stocksToBuy;
+            if (cash >= prices[currentDay] * tradeAmount) {
+                cash -= prices[currentDay] * tradeAmount;
+                stocks += tradeAmount;
                 buySignals.push({ x: currentDay, y: prices[currentDay] });
                 updateChart();
-                document.getElementById("status").innerText = `買いました: ${stocksToBuy} 株`;
+                document.getElementById("status").innerText = `買いました: ${tradeAmount} 株`;
             } else {
                 document.getElementById("status").innerText = "資金が不足しています。";
             }
         }
 
         function sellStock() {
-            if (stocks > 0) {
-                cash += stocks * prices[currentDay];
+            if (stocks >= tradeAmount) {
+                cash += prices[currentDay] * tradeAmount;
+                stocks -= tradeAmount;
                 sellSignals.push({ x: currentDay, y: prices[currentDay] });
-                stocks = 0;
                 updateChart();
-                document.getElementById("status").innerText = "売却しました。";
+                document.getElementById("status").innerText = `売却しました: ${tradeAmount} 株`;
             } else {
                 document.getElementById("status").innerText = "売る株がありません。";
             }
