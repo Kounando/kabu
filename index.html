@@ -10,9 +10,19 @@
     <h1>架空の株式シミュレーション</h1>
     <div id="chart"></div>
     <h2 id="finalValue"></h2>
+    <button onclick="buyStock()">買う</button>
+    <button onclick="sellStock()">売る</button>
+    <p id="status"></p>
     
     <script>
-        // ランダムな株価データを生成
+        let days = 100;
+        let prices = generateStockPrices(days, 100, 5);
+        let rsi = computeRSI(prices);
+        let cash = 10000;
+        let stocks = 0;
+        let buySignals = [], sellSignals = [];
+        let currentDay = 0;
+
         function generateStockPrices(days, initialPrice, volatility) {
             let prices = [initialPrice];
             for (let i = 1; i < days; i++) {
@@ -21,8 +31,7 @@
             }
             return prices;
         }
-        
-        // RSI計算
+
         function computeRSI(prices, period = 14) {
             let rsi = new Array(prices.length).fill(50);
             for (let i = period; i < prices.length; i++) {
@@ -37,54 +46,61 @@
             }
             return rsi;
         }
-        
-        let days = 100;
-        let prices = generateStockPrices(days, 100, 5);
-        let rsi = computeRSI(prices);
-        
-        let cash = 10000;
-        let stocks = 0;
-        let buySignals = [], sellSignals = [];
-        
-        for (let i = 0; i < days; i++) {
-            if (rsi[i] < 30 && cash >= prices[i]) { 
-                stocks = Math.floor(cash / prices[i]);
-                cash -= stocks * prices[i];
-                buySignals.push({x: i, y: prices[i]});
-            } else if (rsi[i] > 70 && stocks > 0) {
-                cash += stocks * prices[i];
-                stocks = 0;
-                sellSignals.push({x: i, y: prices[i]});
+
+        function buyStock() {
+            if (cash >= prices[currentDay]) {
+                let stocksToBuy = Math.floor(cash / prices[currentDay]);
+                cash -= stocksToBuy * prices[currentDay];
+                stocks += stocksToBuy;
+                buySignals.push({ x: currentDay, y: prices[currentDay] });
+                updateChart();
+                document.getElementById("status").innerText = `買いました: ${stocksToBuy} 株`;
+            } else {
+                document.getElementById("status").innerText = "資金が不足しています。";
             }
         }
-        
-        let finalValue = cash + stocks * prices[prices.length - 1];
-        document.getElementById("finalValue").innerText = `最終資産価値: $${finalValue.toFixed(2)}`;
-        
-        let trace1 = {
-            x: Array.from({length: days}, (_, i) => i),
-            y: prices,
-            mode: 'lines',
-            name: '株価'
-        };
-        
-        let trace2 = {
-            x: buySignals.map(p => p.x),
-            y: buySignals.map(p => p.y),
-            mode: 'markers',
-            name: '買いシグナル',
-            marker: {color: 'green', size: 10}
-        };
-        
-        let trace3 = {
-            x: sellSignals.map(p => p.x),
-            y: sellSignals.map(p => p.y),
-            mode: 'markers',
-            name: '売りシグナル',
-            marker: {color: 'red', size: 10}
-        };
-        
-        Plotly.newPlot('chart', [trace1, trace2, trace3]);
+
+        function sellStock() {
+            if (stocks > 0) {
+                cash += stocks * prices[currentDay];
+                sellSignals.push({ x: currentDay, y: prices[currentDay] });
+                stocks = 0;
+                updateChart();
+                document.getElementById("status").innerText = "売却しました。";
+            } else {
+                document.getElementById("status").innerText = "売る株がありません。";
+            }
+        }
+
+        function updateChart() {
+            let trace1 = {
+                x: Array.from({ length: days }, (_, i) => i),
+                y: prices,
+                mode: 'lines',
+                name: '株価'
+            };
+
+            let trace2 = {
+                x: buySignals.map(p => p.x),
+                y: buySignals.map(p => p.y),
+                mode: 'markers',
+                name: '買いシグナル',
+                marker: { color: 'green', size: 10 }
+            };
+
+            let trace3 = {
+                x: sellSignals.map(p => p.x),
+                y: sellSignals.map(p => p.y),
+                mode: 'markers',
+                name: '売りシグナル',
+                marker: { color: 'red', size: 10 }
+            };
+
+            Plotly.newPlot('chart', [trace1, trace2, trace3]);
+            document.getElementById("finalValue").innerText = `現金: $${cash.toFixed(2)} | 保有株: ${stocks} 株`;
+        }
+
+        updateChart();
     </script>
 </body>
 </html>
