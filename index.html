@@ -94,13 +94,13 @@
 
         function adjustStockPrice() {
             let trendFactor = Math.random() > 0.5 ? 1 : -1;
-            let volatility = Math.random() * 2.5 + 0.5;
-            let change = Math.floor((Math.random() * 300 * trendFactor) * volatility);
-            let volumeEffect = (stocks / 1000) * (Math.random() * 50 - 25);
+            let volatility = Math.random() * 5 + 1.5; // 変動幅を大きく調整
+            let change = Math.floor((Math.random() * 500 * trendFactor) * volatility); // 価格変動を増加
+            let volumeEffect = (stocks / 1000) * (Math.random() * 100 - 50);
             change += Math.floor(volumeEffect);
             
-            if (Math.random() < 0.07) {
-                let eventImpact = (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 10000);
+            if (Math.random() < 0.1) { // ニュースイベントの確率を少し上げる
+                let eventImpact = (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 15000);
                 change += eventImpact;
                 document.getElementById("status").innerText = "ニュースイベント発生！市場が急変動！";
             }
