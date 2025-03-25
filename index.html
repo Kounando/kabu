@@ -89,7 +89,7 @@
             if (cash >= prices[prices.length - 1] * tradeAmount) {
                 cash -= prices[prices.length - 1] * tradeAmount;
                 stocks += tradeAmount;
-                document.getElementById("status").innerText = `買いました: ${tradeAmount}
+                document.getElementById("status").innerText = `買いました: ${tradeAmount} 株`;
             } else {
                 document.getElementById("status").innerText = "資金が不足しています。";
             }
@@ -104,7 +104,7 @@
             if (stocks >= tradeAmount) {
                 cash += prices[prices.length - 1] * tradeAmount;
                 stocks -= tradeAmount;
-                document.getElementById("status").innerText = `売却しました: ${tradeAmount}
+                document.getElementById("status").innerText = `売却しました: ${tradeAmount} 株`;
             } else {
                 document.getElementById("status").innerText = "売る株がありません。";
             }
@@ -170,7 +170,7 @@
                 plot_bgcolor: '#f9f9f9',
                 paper_bgcolor: '#ffffff'
             });
-            document.getElementById("finalValue").innerText = `現金: ¥${cash.toLocaleString()} | 保有株: ${stocks}
+            document.getElementById("finalValue").innerText = `現金: ¥${cash.toLocaleString()} | 保有株: ${stocks}`;
         }
 
         updateChart();
