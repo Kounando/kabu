@@ -8,6 +8,12 @@
             showSignals = !showSignals;
             updateChart();
         }
+    function autoUpdate() {
+            adjustStockPrice();
+            currentDay = (currentDay + 1) % days;
+            updateChart();
+        }
+        setInterval(autoUpdate, 1000);
     </script>
     <style>
         body {
