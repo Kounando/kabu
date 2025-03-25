@@ -51,19 +51,25 @@
 <body>
     <h1>株取引シミュレーション</h1>
     <div id="chart"></div>
-    <p id="finalValue">現金: ¥1,000,000 | 保有株: 0</p>
+    <p id="finalValue">現金: ¥10,000,000 | 保有株: 0</p>
+    <label for="tradeAmount">取引株数: </label>
+    <select id="tradeAmount">
+        <option value="10">10株</option>
+        <option value="50">50株</option>
+        <option value="100">100株</option>
+    </select>
     <button class="button buy-button" onclick="buyStock()">買う</button>
     <button class="button sell-button" onclick="sellStock()">売る</button>
     <p id="status"></p>
 
     <script>
-        let cash = 1000000;
+        let cash = 10000000;
         let stocks = 0;
-        let tradeAmount = 100;
         let prices = Array(50).fill(10000);
         let currentDay = 50;
 
         function buyStock() {
+            let tradeAmount = parseInt(document.getElementById("tradeAmount").value);
             if (cash >= prices[prices.length - 1] * tradeAmount) {
                 cash -= prices[prices.length - 1] * tradeAmount;
                 stocks += tradeAmount;
@@ -75,6 +81,7 @@
         }
 
         function sellStock() {
+            let tradeAmount = parseInt(document.getElementById("tradeAmount").value);
             if (stocks >= tradeAmount) {
                 cash += prices[prices.length - 1] * tradeAmount;
                 stocks -= tradeAmount;
