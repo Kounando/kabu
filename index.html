@@ -47,6 +47,7 @@
                 stocks += tradeAmount;
                 buySignals.push({ x: currentDay, y: prices[currentDay] });
                 updateChart();
+        setInterval(adjustStockPrice, 2000);
                 document.getElementById("status").innerText = `買いました: ${tradeAmount} 株`;
             } else {
                 document.getElementById("status").innerText = "資金が不足しています。";
