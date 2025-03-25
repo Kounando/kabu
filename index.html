@@ -139,7 +139,13 @@
                 marker: { color: 'red', size: 10 }
             };
 
-            Plotly.newPlot('chart', [trace1, trace2, trace3]);
+            Plotly.newPlot('chart', [trace1, trace2, trace3], {
+                title: '株価チャート',
+                xaxis: { title: '日数', showgrid: true, gridcolor: '#ddd' },
+                yaxis: { title: '価格 (円)', showgrid: true, gridcolor: '#ddd' },
+                plot_bgcolor: '#f9f9f9',
+                paper_bgcolor: '#ffffff'
+            });
             document.getElementById("finalValue").innerText = `現金: ¥${cash.toLocaleString()} | 保有株: ${stocks} 株`;
         }
 
