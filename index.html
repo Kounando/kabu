@@ -4,17 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>架空の株式シミュレーション</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js">function toggleSignals() {
-            showSignals = !showSignals;
-            updateChart();
-        }
-    function autoUpdate() {
-            adjustStockPrice();
-            currentDay = (currentDay + 1) % days;
-            updateChart();
-        }
-        setInterval(autoUpdate, 1000);
-    </script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
