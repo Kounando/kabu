@@ -119,8 +119,10 @@
             let trace1 = {
                 x: Array.from({ length: prices.length }, (_, i) => i + currentDay - prices.length + 1),
                 y: prices,
-                mode: 'lines',
-                name: '株価'
+                mode: 'lines+markers',
+                name: '株価',
+                line: { color: 'blue', width: 2 },
+                marker: { color: 'blue', size: 6 }
             };
 
             let trace2 = {
