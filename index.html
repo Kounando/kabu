@@ -127,7 +127,7 @@
                 sellSignals = [];
             }
             let trace1 = {
-                x: Array.from({ length: prices.length }, (_, i) => i + currentDay - prices.length + 1),
+                x: Array.from({ length: prices.length }, (_, i) => new Date(Date.now() - (prices.length - i) * 86400000).toISOString().split('T')[0]),
                 y: prices,
                 mode: 'lines+markers',
                 name: '株価',
@@ -141,7 +141,7 @@
 
             Plotly.newPlot('chart', [trace1], {
                 title: '株価チャート',
-                xaxis: { title: '日数', showgrid: true, gridcolor: '#ddd', range: [currentDay - 50, currentDay + 10] },
+                xaxis: { title: '日付', showgrid: true, gridcolor: '#ddd', type: 'category' },
                 yaxis: { title: '価格 (円)', showgrid: true, gridcolor: '#ddd' },
                 plot_bgcolor: '#f9f9f9',
                 paper_bgcolor: '#ffffff'
