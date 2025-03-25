@@ -89,12 +89,12 @@
             if (cash >= prices[prices.length - 1] * tradeAmount) {
                 cash -= prices[prices.length - 1] * tradeAmount;
                 stocks += tradeAmount;
-                document.getElementById("status").innerText = `買いました: ${tradeAmount} 株`;
+                document.getElementById("status").innerText = `買いました: ${tradeAmount}
             } else {
                 document.getElementById("status").innerText = "資金が不足しています。";
             }
-            setTimeout(updateChart, 100);
-        } 株`;
+            updateChart();
+        }
             } else {
                 document.getElementById("status").innerText = "資金が不足しています。";
             }
@@ -104,12 +104,12 @@
             if (stocks >= tradeAmount) {
                 cash += prices[prices.length - 1] * tradeAmount;
                 stocks -= tradeAmount;
-                document.getElementById("status").innerText = `売却しました: ${tradeAmount} 株`;
+                document.getElementById("status").innerText = `売却しました: ${tradeAmount}
             } else {
                 document.getElementById("status").innerText = "売る株がありません。";
             }
-            setTimeout(updateChart, 100);
-        } 株`;
+            updateChart();
+        }
             } else {
                 document.getElementById("status").innerText = "売る株がありません。";
             }
@@ -131,7 +131,7 @@
             prices.push(newPrice);
             prices.shift();
             currentDay++;
-            setTimeout(updateChart, 100);
+            updateChart();
         }
 
         function updateChart() {
@@ -159,10 +159,10 @@
                 plot_bgcolor: '#f9f9f9',
                 paper_bgcolor: '#ffffff'
             });
-            document.getElementById("finalValue").innerText = `現金: ¥${cash.toLocaleString()} | 保有株: ${stocks} 株`;
+            document.getElementById("finalValue").innerText = `現金: ¥${cash.toLocaleString()} | 保有株: ${stocks}
         }
 
-        setTimeout(updateChart, 100);
+        updateChart();
     </script>
 </body>
 </html>
