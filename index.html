@@ -139,7 +139,7 @@
 
             
 
-            Plotly.newPlot('chart', showSignals ? [trace1, trace2, trace3] : [trace1], {
+            Plotly.newPlot('chart', [trace1], {
                 title: '株価チャート',
                 xaxis: { title: '日数', showgrid: true, gridcolor: '#ddd', range: [currentDay - 50, currentDay + 10] },
                 yaxis: { title: '価格 (円)', showgrid: true, gridcolor: '#ddd' },
