@@ -116,16 +116,27 @@
         }
 
         function adjustStockPrice() {
-            let trend = Math.random() > 0.5 ? 1 : -1;
-            let volatility = Math.random() * 3; // 市場のボラティリティを考慮
-            let change = Math.floor((Math.random() * 200 * trend) * volatility);
-            
-            // ニュースイベントによる影響
-            if (Math.random() < 0.05) { // 5%の確率でイベント発生
-                let eventImpact = (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 5000);
-                change += eventImpact;
-                document.getElementById("status").innerText = "ニュースイベント発生！市場が急変動！";
-            }
+    let trendFactor = Math.random() > 0.5 ? 1 : -1;
+    let volatility = Math.random() * 2.5 + 0.5; // 市場のボラティリティを強化
+    let change = Math.floor((Math.random() * 300 * trendFactor) * volatility);
+    
+    // 出来高の影響をシミュレート
+    let volumeEffect = (stocks / 1000) * (Math.random() * 50 - 25);
+    change += Math.floor(volumeEffect);
+    
+    // ニュースイベントの影響を強化
+    if (Math.random() < 0.07) { // 7%の確率でイベント発生
+        let eventImpact = (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 10000);
+        change += eventImpact;
+        document.getElementById("status").innerText = "ニュースイベント発生！市場が急変動！";
+    }
+    
+    let newPrice = Math.max(5000, prices[prices.length - 1] + change);
+    prices.push(newPrice);
+    prices.shift();
+    currentDay++;
+    updateChart();
+}
             
             let newPrice = Math.max(5000, prices[prices.length - 1] + change);
             prices.push(newPrice);
