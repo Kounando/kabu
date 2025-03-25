@@ -46,11 +46,18 @@
             margin-top: 10px;
             color: #333;
         }
+        #currentPrice {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff5733;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <h1>株取引シミュレーション</h1>
     <div id="chart"></div>
+    <p id="currentPrice">現在の株価: ¥10,000</p>
     <p id="finalValue">現金: ¥10,000,000 | 保有株: 0</p>
     <label for="tradeAmount">取引株数: </label>
     <select id="tradeAmount">
@@ -94,12 +101,12 @@
 
         function adjustStockPrice() {
             let trendFactor = Math.random() > 0.5 ? 1 : -1;
-            let volatility = Math.random() * 5 + 1.5; // 変動幅を大きく調整
-            let change = Math.floor((Math.random() * 500 * trendFactor) * volatility); // 価格変動を増加
+            let volatility = Math.random() * 5 + 1.5;
+            let change = Math.floor((Math.random() * 500 * trendFactor) * volatility);
             let volumeEffect = (stocks / 1000) * (Math.random() * 100 - 50);
             change += Math.floor(volumeEffect);
             
-            if (Math.random() < 0.1) { // ニュースイベントの確率を少し上げる
+            if (Math.random() < 0.1) {
                 let eventImpact = (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 15000);
                 change += eventImpact;
                 document.getElementById("status").innerText = "ニュースイベント発生！市場が急変動！";
@@ -129,6 +136,7 @@
                 plot_bgcolor: '#f9f9f9',
                 paper_bgcolor: '#ffffff'
             });
+            document.getElementById("currentPrice").innerText = `現在の株価: ¥${prices[prices.length - 1].toLocaleString()}`;
             document.getElementById("finalValue").innerText = `現金: ¥${cash.toLocaleString()} | 保有株: ${stocks}`;
         }
 
