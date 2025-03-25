@@ -88,7 +88,7 @@
             if (cash >= prices[currentDay] * tradeAmount) {
                 cash -= prices[currentDay] * tradeAmount;
                 stocks += tradeAmount;
-                buySignals.push({ x: currentDay, y: prices[currentDay] });
+                
                 updateChart();
                 document.getElementById("status").innerText = `買いました: ${tradeAmount} 株`;
             } else {
@@ -101,7 +101,7 @@
             if (stocks >= tradeAmount) {
                 cash += prices[currentDay] * tradeAmount;
                 stocks -= tradeAmount;
-                sellSignals.push({ x: currentDay, y: prices[currentDay] });
+                
                 updateChart();
                 document.getElementById("status").innerText = `売却しました: ${tradeAmount} 株`;
             } else {
@@ -125,21 +125,9 @@
                 marker: { color: 'blue', size: 6 }
             };
 
-            let trace2 = {
-                x: buySignals.map(p => p.x),
-                y: buySignals.map(p => p.y),
-                mode: 'markers',
-                name: '買いシグナル',
-                marker: { color: 'green', size: 10 }
-            };
+            
 
-            let trace3 = {
-                x: sellSignals.map(p => p.x),
-                y: sellSignals.map(p => p.y),
-                mode: 'markers',
-                name: '売りシグナル',
-                marker: { color: 'red', size: 10 }
-            };
+            
 
             Plotly.newPlot('chart', [trace1, trace2, trace3], {
                 title: '株価チャート',
