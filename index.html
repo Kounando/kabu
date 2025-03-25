@@ -122,8 +122,12 @@
         }
 
         function adjustStockPrice() {
-            let change = Math.floor(Math.random() * 500 - 250);
-            prices[currentDay] = Math.max(5000, prices[currentDay] + change);
+            let trend = Math.random() > 0.5 ? 1 : -1;
+            let change = Math.floor(Math.random() * 200 * trend);
+            let newPrice = Math.max(5000, prices[prices.length - 1] + change);
+            prices.push(newPrice);
+            prices.shift();
+            currentDay++;
             updateChart();
         }
 
@@ -133,7 +137,7 @@
                 sellSignals = [];
             }
             let trace1 = {
-                x: Array.from({ length: prices.length }, (_, i) => i + 1),
+                x: Array.from({ length: prices.length }, (_, i) => currentDay - prices.length + i + 1),
                 y: prices,
                 mode: 'lines+markers',
                 name: '株価',
@@ -145,7 +149,7 @@
 
             
 
-            Plotly.newPlot('chart', [trace1], {
+            Plotly.react('chart', [trace1], {
                 title: '株価チャート',
                 xaxis: { title: '日数', showgrid: true, gridcolor: '#ddd' },
                 yaxis: { title: '価格 (円)', showgrid: true, gridcolor: '#ddd' },
