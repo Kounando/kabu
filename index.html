@@ -96,26 +96,30 @@
         }
 
         function buyStock() {
-            adjustStockPrice();
-            if (cash >= prices[currentDay] * tradeAmount) {
-                cash -= prices[currentDay] * tradeAmount;
+            if (cash >= prices[prices.length - 1] * tradeAmount) {
+                cash -= prices[prices.length - 1] * tradeAmount;
                 stocks += tradeAmount;
-                
-                updateChart();
                 document.getElementById("status").innerText = `買いました: ${tradeAmount} 株`;
+            } else {
+                document.getElementById("status").innerText = "資金が不足しています。";
+            }
+            updateChart();
+        } 株`;
             } else {
                 document.getElementById("status").innerText = "資金が不足しています。";
             }
         }
 
         function sellStock() {
-            adjustStockPrice();
             if (stocks >= tradeAmount) {
-                cash += prices[currentDay] * tradeAmount;
+                cash += prices[prices.length - 1] * tradeAmount;
                 stocks -= tradeAmount;
-                
-                updateChart();
                 document.getElementById("status").innerText = `売却しました: ${tradeAmount} 株`;
+            } else {
+                document.getElementById("status").innerText = "売る株がありません。";
+            }
+            updateChart();
+        } 株`;
             } else {
                 document.getElementById("status").innerText = "売る株がありません。";
             }
