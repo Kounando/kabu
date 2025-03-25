@@ -6,10 +6,51 @@
     <title>架空の株式シミュレーション</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
-        button {
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        #chart {
+            width: 90%;
+            margin: 20px auto;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .trade-controls {
+            margin: 20px 0;
+        }
+        select, button {
             font-size: 20px;
             padding: 10px 20px;
             margin: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .sell-btn {
+            background-color: #f44336;
+        }
+        .sell-btn:hover {
+            background-color: #d32f2f;
+        }
+        #status {
+            font-size: 18px;
+            color: #333;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -17,24 +58,26 @@
     <h1>架空の株式シミュレーション</h1>
     <div id="chart"></div>
     <h2 id="finalValue"></h2>
-    <label for="tradeAmount">取引単位:</label>
-    <select id="tradeAmount" onchange="changeTradeAmount()">
-        <option value="10">10株</option>
-        <option value="50">50株</option>
-        <option value="100">100株</option>
-    </select>
-    <button onclick="buyStock()">買う</button>
-    <button onclick="sellStock()">売る</button>
+    <div class="trade-controls">
+        <label for="tradeAmount">取引単位:</label>
+        <select id="tradeAmount" onchange="changeTradeAmount()">
+            <option value="10">10株</option>
+            <option value="50">50株</option>
+            <option value="100">100株</option>
+        </select>
+        <button onclick="buyStock()">買う</button>
+        <button class="sell-btn" onclick="sellStock()">売る</button>
+    </div>
     <p id="status"></p>
     
     <script>
         let days = 100;
-        let prices = Array.from({ length: days }, (_, i) => 10000 + Math.floor(Math.random() * 2000 - 1000)); // すべての株価を10000円に固定
+        let prices = Array.from({ length: days }, (_, i) => 10000 + Math.floor(Math.random() * 2000 - 1000));
         let cash = 100000000;
         let stocks = 0;
         let buySignals = [], sellSignals = [];
         let currentDay = 0;
-        let tradeAmount = 10; // 初期取引単位を10株に設定
+        let tradeAmount = 10;
 
         function changeTradeAmount() {
             tradeAmount = parseInt(document.getElementById("tradeAmount").value);
@@ -47,7 +90,6 @@
                 stocks += tradeAmount;
                 buySignals.push({ x: currentDay, y: prices[currentDay] });
                 updateChart();
-        setInterval(adjustStockPrice, 2000);
                 document.getElementById("status").innerText = `買いました: ${tradeAmount} 株`;
             } else {
                 document.getElementById("status").innerText = "資金が不足しています。";
