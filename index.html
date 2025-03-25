@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>架空の株式シミュレーション</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js">function toggleSignals() {
+            showSignals = !showSignals;
+            updateChart();
+        }
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,6 +72,7 @@
         <button onclick="buyStock()">買う</button>
         <button class="sell-btn" onclick="sellStock()">売る</button>
     </div>
+    <button onclick="toggleSignals()">シグナル表示</button>
     <p id="status"></p>
     
     <script>
@@ -76,6 +81,7 @@
         let cash = 100000000;
         let stocks = 0;
         let buySignals = [], sellSignals = [];
+        let showSignals = true;
         let currentDay = 0;
         let tradeAmount = 10;
 
@@ -116,6 +122,10 @@
         }
 
         function updateChart() {
+            if (!showSignals) {
+                buySignals = [];
+                sellSignals = [];
+            }
             let trace1 = {
                 x: Array.from({ length: prices.length }, (_, i) => i + currentDay - prices.length + 1),
                 y: prices,
@@ -129,7 +139,7 @@
 
             
 
-            Plotly.newPlot('chart', [trace1, trace2, trace3], {
+            Plotly.newPlot('chart', showSignals ? [trace1, trace2, trace3] : [trace1], {
                 title: '株価チャート',
                 xaxis: { title: '日数', showgrid: true, gridcolor: '#ddd', range: [currentDay - 50, currentDay + 10] },
                 yaxis: { title: '価格 (円)', showgrid: true, gridcolor: '#ddd' },
